@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service         # nombre del servicio MySQL (usarás este host en Django)
+spec:
+  selector:
+    app: mysql
+  ports:
+  - port: 3306                # puerto interno del servicio
+    targetPort: 3306          # puerto del contenedor MySQL
+  type: ClusterIP           # opcional: "None" si quisieras headless Service (no necesario aquí)

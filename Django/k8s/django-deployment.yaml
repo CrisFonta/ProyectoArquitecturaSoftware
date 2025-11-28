@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-microservicio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: django-microservicio
+  template:
+    metadata:
+      labels:
+        app: django-microservicio
+    spec:
+      containers:
+      - name: django-app
+        image: crisfontanilla/django-microservicio:latest   # nombre:tag de la imagen Docker construida
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DJANGO_ALLOWED_HOSTS
+          valueFrom:
+            configMapKeyRef:
+              name: django-config
+              key: DJANGO_ALLOWED_HOSTS
+        - name: DJANGO_DEBUG
+          valueFrom:
+            configMapKeyRef:
+              name: django-config
+              key: DJANGO_DEBUG
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: django-config
+              key: MYSQL_DATABASE
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: django-mysql-secret
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: django-mysql-secret
+              key: MYSQL_PASSWORD
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: django-mysql-secret
+              key: MYSQL_ROOT_PASSWORD
+        - name: DJANGO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: django-mysql-secret
+              key: DJANGO_SECRET_KEY
+        - name: MYSQL_HOST
+          value: "mysql-service"   # El host de la BD es el nombre del Service de MySQL
+        - name: MYSQL_PORT
+          value: "3306"

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: django-config    # nombre del ConfigMap
+data:
+  DJANGO_ALLOWED_HOSTS: "*"   # Por ejemplo, permitir localhost (ajusta según necesidades)
+  DJANGO_DEBUG: "False"                        # En Kubernetes normalmente False (como string)
+  MYSQL_DATABASE: "genomica_db"                 # Nombre de la base de datos a usar/crear

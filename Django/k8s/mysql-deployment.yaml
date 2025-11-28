@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql                # nombre del deployment MySQL
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0      # usa la imagen oficial de MySQL (tag de versión deseada)
+        env:
+        - name: MYSQL_ROOT_PASSWORD    # contraseña root (obligatoria)
+          valueFrom:
+            secretKeyRef:
+              name: django-mysql-secret
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE         # nombre de base de datos inicial
+          valueFrom:
+            configMapKeyRef:
+              name: django-config
+              key: MYSQL_DATABASE
+        - name: MYSQL_USER             # usuario de aplicación a crear
+          valueFrom:
+            secretKeyRef:
+              name: django-mysql-secret
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD         # password del usuario de aplicación
+          valueFrom:
+            secretKeyRef:
+              name: django-mysql-secret
+              key: MYSQL_PASSWORD
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/mysql    # montar el PV en el directorio de datos de MySQL
+      volumes:
+      - name: db-data
+        persistentVolumeClaim:
+          claimName: mysql-pvc         # reclamar el PV definido antes
