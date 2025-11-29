@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copiar el resto de la app
 COPY . .
-
+RUN pip install gunicorn
 EXPOSE 8000
 
 CMD ["gunicorn", "genomics.wsgi:application", "--bind", "0.0.0.0:8000"]

@@ -19,6 +19,11 @@ from django.urls import path, include
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+    SpectacularRedocView,
+)
 
 schema_view = get_schema_view(
      openapi.Info(
@@ -35,5 +40,7 @@ urlpatterns = [
     path("genes/", include("genes.urls")),
     path("variants/", include("variants.urls")),
     path("reports/", include("reports.urls")),
-    path("swagger/", schema_view.with_ui("swagger", cache_timeout=0)),
+    path('openapi/', SpectacularAPIView.as_view(), name='schema'),    # Swagger UI
+    path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui')
+
 ]

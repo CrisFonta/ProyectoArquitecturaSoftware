@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clinica-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: clinica
+  template:
+    metadata:
+      labels:
+        app: clinica
+    spec:
+      containers:
+        - name: clinica-app
+          image: dgomez9903/microservicio-clinica-arquitecturas:1.0.0
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: db-configmap
+          env:
+            - name: MONGO_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: MONGO_INITDB_ROOT_USERNAME
+            
+            - name: MONGO_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: MONGO_INITDB_ROOT_PASSWORD
+
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: db-configmap
+                  key: MONGO_HOST

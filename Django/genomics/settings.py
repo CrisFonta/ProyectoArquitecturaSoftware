@@ -39,16 +39,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'drf_yasg',
     'genes',
     'variants',
     'reports',
-    'corsheaders'
+    # 'corsheaders',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -87,7 +88,7 @@ WSGI_APPLICATION = 'genomics.wsgi.application'
 #         "NAME": "genomica_db",
 #         "USER": "root",
 #         "PASSWORD": "Cris123+@",
-#         "HOST": "mysql",  # o nombre del servicio en Kubernetes
+#         "HOST": "localhost",  # o nombre del servicio en Kubernetes
 #         "PORT": "3306",
 #     }
 # }
@@ -144,3 +145,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'API de Django',
+    'DESCRIPTION': 'Documentación generada automáticamente con Swagger/OpenAPI',
+    'VERSION': '1.0.0',
+}
+
