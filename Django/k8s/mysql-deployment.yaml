@@ -42,7 +42,12 @@ spec:
         volumeMounts:
         - name: db-data
           mountPath: /var/lib/mysql    # montar el PV en el directorio de datos de MySQL
+        - name: init-sql
+          mountPath: /docker-entrypoint-initdb.d
       volumes:
       - name: db-data
         persistentVolumeClaim:
           claimName: mysql-pvc         # reclamar el PV definido antes
+      - name: init-sql
+        configMap:
+          name: mysql-initdb
