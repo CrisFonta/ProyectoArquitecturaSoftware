@@ -122,6 +122,33 @@ class ReportDetailView(APIView):
             return Response({"error": "Reporte no encontrado"}, status=status.HTTP_404_NOT_FOUND)
         report.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    @extend_schema(
+        summary="Actualizar reporte",
+        responses={204: OpenApiResponse(description="Reporte Actualizado")}
+    )
+    def put(self, request, id):
+        report = self.get_object(id)
+        if report is None:
+            return Response({"error": "Reporte no encontrada"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            dto = ReportDTO(**request.data)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            variant = GeneticVariant.objects.get(id=dto.variantId)
+        except GeneticVariant.DoesNotExist:
+            return Response({"error": "Variante no encontrada"}, status=status.HTTP_404_NOT_FOUND)
+
+        data = dto.dict()
+        data["variant"] = variant.id
+
+        serializer = ReportSerializer(report, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PatientReportsView(APIView):
