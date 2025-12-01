@@ -12,9 +12,43 @@ spec:
       labels:
         app: django-microservicio
     spec:
+
+      initContainers:
+      - name: wait-and-migrate
+        image: dgomez9903/microservicio-django:1.0.0
+        command:
+          [
+            "sh",
+            "-c",
+            "echo 'Esperando MySQL...' && \
+             until nc -z ${MYSQL_HOST} ${MYSQL_PORT}; do echo 'MySQL no disponible, reintentando...'; sleep 2; done; \
+             echo 'MySQL listo. Ejecutando migraciones...' && \
+             python manage.py migrate --noinput"
+          ]
+        env:
+        - name: MYSQL_HOST
+          value: "mysql-service"
+        - name: MYSQL_PORT
+          value: "3306"
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: django-config
+              key: MYSQL_DATABASE
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: django-mysql-secret
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: django-mysql-secret
+              key: MYSQL_PASSWORD
+
       containers:
       - name: django-app
-        image: crisfontanilla/django-microservicio:latest   # nombre:tag de la imagen Docker construida
+        image: dgomez9903/microservicio-django:1.0.0
         ports:
         - containerPort: 8000
         env:
@@ -54,6 +88,6 @@ spec:
               name: django-mysql-secret
               key: DJANGO_SECRET_KEY
         - name: MYSQL_HOST
-          value: "mysql-service"   # El host de la BD es el nombre del Service de MySQL
+          value: "mysql-service"
         - name: MYSQL_PORT
           value: "3306"
